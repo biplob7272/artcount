@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Counting System</title>
+
+<style>
+body {
+    margin: 0;
+    font-family: "Segoe UI", sans-serif;
+    background: #0b1220;
+    color: #cbd5e1;
+}
+
+.container {
+    display: flex;
+    height: 72vh;
+}
+
+/* SECTIONS */
+.section {
+    flex: 1;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+/* DIVIDER */
+.divider {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    width: 1px;
+    background: #1e293b;
+}
+
+/* COUNTERS */
+.counter-boxes {
+    display: flex;
+    gap: 12px;
+}
+
+.box {
+    flex: 1;
+    background: #111827;
+    padding: 15px;
+    border-radius: 14px;
+    text-align: center;
+    border: 1px solid #1f2937;
+}
+
+.box h3 {
+    margin: 0;
+    font-size: 13px;
+    color: #94a3b8;
+}
+
+.box p {
+    font-size: 36px;
+    margin: 6px 0;
+    font-weight: bold;
+}
+
+.dead { color: #ff6b6b; }
+.deform { color: #4da6ff; }
+.umbrella { color: #2ecc71; }
+.rightNum { color: #22d3ee; }
+
+.hint {
+    font-size: 11px;
+    color: #64748b;
+}
+
+/* SAVED */
+.saved {
+    margin-top: 20px;
+    height: 260px;
+    display: flex;
+    flex-direction: column;
+    visibility: hidden;
+}
+
+.saved.active {
+    visibility: visible;
+}
+
+.saved-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.delete-btn {
+    padding: 3px 10px;
+    font-size: 11px;
+    background: #ef4444;
+    border: none;
+    color: white;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+/* TABLE */
+.table-head, .item {
+    display: grid;
+    grid-template-columns: 50px 1fr 1fr 1fr;
+    font-size: 13px;
+    padding: 5px 0;
+    align-items: center;
+}
+
+.table-head div,
+.item div {
+    text-align: center;
+}
+
+/* LEFT tighter */
+.left .table-head div:not(:first-child),
+.left .item div:not(:first-child) {
+    margin-left: -15px;
+}
+
+.table-head {
+    color: #64748b;
+    border-bottom: 1px solid #1e293b;
+}
+
+.item {
+    border-bottom: 1px solid #1e293b;
+}
+
+/* RIGHT */
+.right .table-head,
+.right .item {
+    grid-template-columns: 50px 1fr;
+}
+
+.right .table-head div,
+.right .item div {
+    text-align: center;
+}
+
+.right .table-head div:last-child,
+.right .item div:last-child {
+    margin-left: 10px;
+}
+
+/* LIST */
+.list-area {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+/* 🔥 FINAL MOBILE FIX */
+@media(max-width:768px){
+
+    .container {
+        flex-direction: column;
+        height: auto;
+    }
+
+    .section {
+        width: 100%;
+        justify-content: flex-start; /* 🔥 important */
+    }
+
+    /* saved ka height remove */
+    .saved {
+        height: auto;
+    }
+
+    /* divider remove */
+    .divider {
+        display: none;
+    }
+
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<!-- LEFT -->
+<div class="section left">
+
+<div>
+<div class="counter-boxes">
+    <div class="box">
+        <h3>Dead</h3>
+        <p id="dead" class="dead">00</p>
+        <div class="hint">← key</div>
+    </div>
+    <div class="box">
+        <h3>Deform</h3>
+        <p id="deform" class="deform">00</p>
+        <div class="hint">↓ key</div>
+    </div>
+    <div class="box">
+        <h3>Umbrella</h3>
+        <p id="umbrella" class="umbrella">00</p>
+        <div class="hint">→ key</div>
+    </div>
+</div>
+
+<div class="hint" style="margin-top:10px;">
+Save: Ctrl | Reset: Delete
+</div>
+</div>
+
+<div class="saved" id="leftSavedBox">
+    <div class="saved-header">
+        <h4>Saved Items</h4>
+        <button class="delete-btn" onclick="clearLeft()">Delete</button>
+    </div>
+
+    <div class="table-head">
+        <div>#</div>
+        <div>Dead</div>
+        <div>Deform</div>
+        <div>Umbrella</div>
+    </div>
+
+    <div class="list-area" id="leftSaved"></div>
+</div>
+
+</div>
+
+<div class="divider"></div>
+
+<!-- RIGHT -->
+<div class="section right">
+
+<div>
+<div class="counter-boxes">
+    <div class="box">
+        <h3>Count</h3>
+        <p id="rightDisplay" class="rightNum">000</p>
+        <div class="hint">Enter = Count</div>
+    </div>
+</div>
+
+<div class="hint" style="margin-top:10px; text-align:center;">
+Save: Zero (0) | Reset: PageDown
+</div>
+</div>
+
+<div class="saved" id="rightSavedBox">
+    <div class="saved-header">
+        <h4>Saved Items</h4>
+        <button class="delete-btn" onclick="clearRight()">Delete</button>
+    </div>
+
+    <div class="table-head">
+        <div>#</div>
+        <div>Numbers</div>
+    </div>
+
+    <div class="list-area" id="rightSaved"></div>
+</div>
+
+</div>
+
+</div>
+
+<script>
+let dead=0, deform=0, umbrella=0, right=0;
+let leftSaved=[], rightSaved=[];
+
+function updateLeft(){
+    document.getElementById("dead").innerText = dead.toString().padStart(2,'0');
+    document.getElementById("deform").innerText = deform.toString().padStart(2,'0');
+    document.getElementById("umbrella").innerText = umbrella.toString().padStart(2,'0');
+}
+
+function updateRight(){
+    document.getElementById("rightDisplay").innerText = right.toString().padStart(3,'0');
+}
+
+function saveLeft(){
+    if(leftSaved.length>=12) return;
+    leftSaved.push({dead,deform,umbrella});
+    dead=0; deform=0; umbrella=0;
+    updateLeft();
+    renderLeft();
+}
+
+function saveRight(){
+    if(rightSaved.length>=12) return;
+    rightSaved.push(right);
+    right=0;
+    updateRight();
+    renderRight();
+}
+
+function renderLeft(){
+    let box = document.getElementById("leftSaved");
+    box.innerHTML="";
+    leftSaved.forEach((item,i)=>{
+        box.innerHTML += `
+        <div class="item">
+            <div>${String(i+1).padStart(2,'0')}.</div>
+            <div>${item.dead}</div>
+            <div>${item.deform}</div>
+            <div>${item.umbrella}</div>
+        </div>`;
+    });
+    document.getElementById("leftSavedBox").classList.toggle("active", leftSaved.length>0);
+}
+
+function renderRight(){
+    let box = document.getElementById("rightSaved");
+    box.innerHTML="";
+    rightSaved.forEach((item,i)=>{
+        box.innerHTML += `
+        <div class="item">
+            <div>${String(i+1).padStart(2,'0')}.</div>
+            <div>${item}</div>
+        </div>`;
+    });
+    document.getElementById("rightSavedBox").classList.toggle("active", rightSaved.length>0);
+}
+
+function clearLeft(){ leftSaved=[]; renderLeft(); }
+function clearRight(){ rightSaved=[]; renderRight(); }
+
+document.addEventListener("keydown", function(e){
+
+    if(e.key==="ArrowLeft") dead++;
+    if(e.key==="ArrowDown") deform++;
+    if(e.key==="ArrowRight") umbrella++;
+
+    if(e.key==="Delete"){
+        dead=0; deform=0; umbrella=0;
+    }
+
+    if(e.key==="Control") saveLeft();
+
+    updateLeft();
+
+    if(e.key==="Enter") right++;
+    if(e.key==="0") saveRight();
+
+    if(e.key==="PageDown"){
+        right=0;
+    }
+
+    updateRight();
+});
+
+updateLeft();
+updateRight();
+</script>
+
+</body>
+</html>
